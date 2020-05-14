@@ -1,0 +1,8 @@
+#!/bin/bash
+
+NAME="${1%.s}"
+as "$1" -o "${NAME}.o"
+ld "${NAME}.o" -o "${NAME}"
+chmod +x "${NAME}"
+rm "${NAME}.o"
+echo "[*] Finished..."
