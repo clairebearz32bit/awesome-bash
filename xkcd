@@ -1,0 +1,52 @@
+#!/bin/bash
+
+usage() {
+  echo -e "Usage: $0 [-nt] [-o output location]"
+  echo -e "  -n\tget comic by number"
+  echo -e "  -t\tget comic by title"
+  echo -e "  -o\tspecify the directory that the comic is saved to" 1>&2
+  exit 1
+}
+
+while getopts ":n:t:ho" options; do
+  case "$options" in
+    n)
+      shift
+      nval="$1"
+      ;;
+    t)
+      shift
+      tval="$1"
+      ;;
+    h)
+      usage
+      ;;
+    o)
+      shift
+      outfile="$2"
+      ;;
+    \?)
+      usage; exit 2;
+      ;;
+    esac
+  done
+
+if ((OPTIND == 1))
+ then
+  printf "No flags specified."
+fi
+
+if [ "$nval" != "" ]; then
+  IMGLINK=$(curl -s "https://xkcd.com/$nval/info.0.json" | jq -r '.img')
+
+elif [ "$tval" != "" ]; then
+  IMGLINK=$(curl -s "https://xkcd.com/comics/$tval.png")
+fi
+
+if [ "$outfile" != "" ]; then
+  wget -q "$IMGLINK" -P "$outfile"
+
+
+else
+  wget -q "$IMGLINK"
+fi
